@@ -33,6 +33,14 @@ const routes = [
       import(
         /* webpackChunkName: "create-account" */ '../views/CreateAccount.vue'
       )
+  },
+  {
+    path: '/attributions',
+    name: 'Attributions',
+    component: () =>
+      import(
+        /* webpackChunkName: "create-account" */ '../views/Attributions.vue'
+      )
   }
 ]
 

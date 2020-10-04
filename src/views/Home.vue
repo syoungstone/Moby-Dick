@@ -1,21 +1,44 @@
 <template>
-  <div>
-    <Article :article="article" />
-    <h2>Comments</h2>
+  <div class="container">
+    <BlogPost
+      :blogPost="blogPost"
+      :loggedIn="loggedIn"
+      :currentUser="currentUser"
+    />
   </div>
 </template>
 
 <script>
-import Article from '@/components/Article.vue'
+import BlogPost from '@/components/BlogPost.vue'
 export default {
   components: {
-    Article
+    BlogPost
+  },
+  props: {
+    loggedIn: {
+      type: Boolean,
+      required: true
+    },
+    currentUser: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
-      article: {
-        title: 'Chapter 42',
-        subheader: 'The Whiteness of the Whale',
+      blogPost: {
+        title: 'The Whiteness of the Whale',
+        subheader:
+          'A totally unnecessary digression on the semiotics of the color white',
+        author: {
+          key: 999999,
+          username: 'Herman Melville',
+          email: 'melville@nantucket.yeolde',
+          password: 'whalesimp',
+          image: ''
+        },
+        timestamp: new Date(1851, 9, 18),
+        image: '',
         paragraphs: [
           {
             text:
@@ -172,9 +195,32 @@ export default {
               'Is it that by its indefiniteness it shadows forth the heartless voids and immensities of the universe, and thus stabs us from behind with the thought of annihilation, when beholding the white depths of the milky way? Or is it, that as in essence whiteness is not so much a color as the visible absence of color; and at the same time the concrete of all colors; is it for these reasons that there is such a dumb blankness, full of meaning, in a wide landscape of snows- a colorless, all-color of atheism from which we shrink? And when we consider that other theory of the natural philosophers, that all other earthly hues- every stately or lovely emblazoning- the sweet tinges of sunset skies and woods; yea, and the gilded velvets of butterflies, and the butterfly cheeks of young girls; all these are but subtile deceits, not actually inherent in substances, but only laid on from without; so that all deified Nature absolutely paints like the harlot, whose allurements cover nothing but the charnel-house within; and when we proceed further, and consider that the mystical cosmetic which produces every one of her hues, the great principle of light, for ever remains white or colorless in itself, and if operating without medium upon matter, would touch all objects, even tulips and roses, with its own blank tinge- pondering all this, the palsied universe lies before us a leper; and like wilful travellers in Lapland, who refuse to wear colored and coloring glasses upon their eyes, so the wretched infidel gazes himself blind at the monumental white shroud that wraps all the prospect around him. And of all these things the Albino whale was the symbol. Wonder ye then at the fiery hunt?',
             key: 30
           }
+        ],
+        comments: [
+          {
+            key: 436987869,
+            user: {
+              key: 345987,
+              username: 'Chad Williams',
+              email: 'hater@gmail.com',
+              password: 'LITcritic',
+              image: ''
+            },
+            timestamp: new Date(1993, 6, 28, 14, 39, 7),
+            text: 'This book is terrible',
+            likes: 0,
+            dislikes: 0,
+            replies: []
+          }
         ]
       }
     }
   }
 }
 </script>
+
+<style scoped>
+.container {
+  max-width: 40em;
+}
+</style>

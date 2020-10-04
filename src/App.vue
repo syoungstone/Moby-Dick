@@ -1,18 +1,26 @@
 <template>
   <div id="app">
-    <NavBar id="nav" />
-    <h1 id="site-title">Moby Dick</h1>
-    <router-view />
+    <SiteHeader />
+    <NavBar :loggedIn="loggedIn" id="nav" />
+    <router-view :loggedIn="loggedIn" :currentUser="currentUser" />
   </div>
 </template>
 
 <script src="https://unpkg.com/feather-icons"></script>
 <script>
 import NavBar from '@/components/NavBar.vue'
+import SiteHeader from '@/components/SiteHeader.vue'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    SiteHeader
+  },
+  data() {
+    return {
+      loggedIn: false,
+      currentUser: null
+    }
   }
 }
 </script>
@@ -36,15 +44,5 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #42b983;
-}
-
-#site-title {
-  font-family: 'LibreBaskerville';
-  font-size: 70px;
-  margin: 0.25em 0em 0em 0em;
-}
-@font-face {
-  font-family: 'LibreBaskerville';
-  src: url('./assets/LibreBaskerville-Bold.ttf') format('ttf');
 }
 </style>

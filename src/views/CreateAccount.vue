@@ -14,9 +14,7 @@
             />
           </div>
           <div v-else>
-            <div id="image-container">
-              <img id="image-preview" ref="imagePreview" :src="profile.image" />
-            </div>
+            <BaseProfilePicture :imgSrc="profile.image" dimensions="115px" />
             <button @click="removeImage" id="remove-image">
               Remove Picture
             </button>
@@ -131,7 +129,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 input,
 #create-account {
   padding: 10px;
@@ -148,15 +146,6 @@ button {
   padding: 0px;
   margin: 0px;
   margin-bottom: 10px;
-}
-#image-container {
-  width: 115px;
-  height: 115px;
-  clip-path: circle(50% at 50% 50%);
-}
-#image-preview {
-  width: 100%;
-  height: 100%;
 }
 .error-message {
   color: rgb(216, 0, 0);

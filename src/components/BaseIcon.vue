@@ -1,6 +1,8 @@
 <template>
   <div class="icon-wrapper">
-    <div class="icon-wrapper" v-html="svg"></div>
+    <div style="float:left;" v-html="svg"></div>
+    <slot style="float:left;"></slot>
+    <div style="clear:both;"></div>
   </div>
 </template>
 
@@ -12,21 +14,40 @@ export default {
     name: String,
     width: {
       type: [Number, String],
-      default: 24
+      default: 15
     },
     height: {
       type: [Number, String],
-      default: 24
-    }
+      default: 15
+    },
+    selected: Boolean
   },
   computed: {
     svg() {
-      return feather.icons[this.name].toSvg({
-        class: 'icon',
-        width: this.width,
-        height: this.height
-      })
+      if (this.selected) {
+        return feather.icons[this.name].toSvg({
+          class: 'icon',
+          width: this.width,
+          height: this.height,
+          color: '#eb6121'
+        })
+      } else {
+        return feather.icons[this.name].toSvg({
+          class: 'icon',
+          width: this.width,
+          height: this.height
+        })
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+div {
+  padding-right: 5px;
+}
+.icon-wrapper:hover {
+  transform: scale(1.25);
+}
+</style>
