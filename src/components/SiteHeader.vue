@@ -1,7 +1,9 @@
 <template>
   <header>
-    <h1 style="float:left;" id="site-title">Moby Dick</h1>
-    <img style="float:left;" id="logo" src="../assets/logo.svg" />
+    <router-link :to="{ name: 'Home' }">
+      <h1 style="float:left;" id="site-title">Moby Dick</h1>
+      <img style="float:left;" id="logo" src="../assets/logo.svg" />
+    </router-link>
     <div style="clear:both;"></div>
   </header>
 </template>
@@ -12,6 +14,7 @@
   font-size: 60px;
   margin-top: 0em;
   margin-bottom: 0.25em;
+  color: #2c3e50;
 }
 #logo {
   width: auto;

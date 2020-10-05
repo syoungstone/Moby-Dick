@@ -1,18 +1,27 @@
 <template>
   <div>
-    <LoginComponent v-if="loginShow" />
+    <LoginComponent v-if="loginShow && !loggedIn" />
     <button v-else-if="!loggedIn" v-on:click="loginShow = true">
       Log In To Comment
     </button>
     <div v-else>
-      <textarea rows="4" cols="50" />
-      <div></div>
-      <button>Submit</button>
+      <form @submit.prevent>
+        <textarea v-model.trim="comment.text" rows="4" cols="50" />
+        <div></div>
+        <button
+          @click="submitComment()"
+          :disabled="comment.text === ''"
+          class="button"
+        >
+          Submit
+        </button>
+      </form>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import LoginComponent from '@/components/LoginComponent.vue'
 export default {
   props: {
@@ -23,6 +32,10 @@ export default {
     currentUser: {
       type: Object,
       required: true
+    },
+    reply: {
+      type: Boolean,
+      required: true
     }
   },
   components: {
@@ -30,7 +43,21 @@ export default {
   },
   data() {
     return {
-      loginShow: false
+      loginShow: false,
+      comment: {
+        text: ''
+      }
+    }
+  },
+  computed: {
+    ...mapState(['userProfile', 'comments'])
+  },
+  methods: {
+    submitComment() {
+      if (!this.reply) {
+        this.$store.dispatch('submitComment', { text: this.comment.text })
+        this.comment.text = ''
+      }
     }
   }
 }

@@ -1,9 +1,10 @@
 <template>
   <div>
-    <h1>Create Account</h1>
-    <div id="login">
+    <h1 v-if="accountCreated">Success!</h1>
+    <div v-else id="login">
+      <h1>Create Account</h1>
       <section>
-        <form>
+        <form @submit.prevent>
           <div v-if="!profile.image">
             <p>Choose a profile picture (optional)</p>
             <input
@@ -19,6 +20,9 @@
               Remove Picture
             </button>
           </div>
+          <p class="error-message" v-if="fileTooBig">
+            Image may not exceed 1 Megabyte!<br />Please choose a smaller one.
+          </p>
           <div>
             <input
               v-model.trim="profile.username"
@@ -68,10 +72,13 @@
               !validEmail ||
                 !matchingPasswords ||
                 !validPassword ||
-                !this.profile.username
+                !this.profile.username ||
+                fileTooBig
             "
             @click="createAccount()"
             id="create-account"
+            class="button"
+            type="button"
           >
             Create Account
           </button>
@@ -91,7 +98,9 @@ export default {
         email: '',
         password: ''
       },
-      passwordConfirm: ''
+      passwordConfirm: '',
+      accountCreated: false,
+      fileTooBig: false
     }
   },
   computed: {
@@ -110,7 +119,8 @@ export default {
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files
       if (!files.length) return
-      this.createImage(files[0])
+      this.fileTooBig = files[0].size > 1000000
+      if (!this.fileTooBig) this.createImage(files[0])
     },
     createImage(file) {
       var reader = new FileReader()
@@ -123,7 +133,13 @@ export default {
       this.profile.image = ''
     },
     createAccount() {
-      //TODO
+      this.$store.dispatch('signup', {
+        username: this.profile.username,
+        email: this.profile.email,
+        password: this.profile.password,
+        image: this.profile.image
+      })
+      this.accountCreated = true
     }
   }
 }

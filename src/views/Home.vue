@@ -1,9 +1,10 @@
 <template>
-  <div class="container">
+  <div>
     <BlogPost
       :blogPost="blogPost"
       :loggedIn="loggedIn"
       :currentUser="currentUser"
+      :comments="comments"
     />
   </div>
 </template>
@@ -22,6 +23,10 @@ export default {
     currentUser: {
       type: Object,
       required: true
+    },
+    comments: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -30,15 +35,11 @@ export default {
         title: 'The Whiteness of the Whale',
         subheader:
           'A totally unnecessary digression on the semiotics of the color white',
-        author: {
-          key: 999999,
-          username: 'Herman Melville',
-          email: 'melville@nantucket.yeolde',
-          password: 'whalesimp',
-          image: ''
-        },
-        timestamp: new Date(1851, 9, 18),
+        uid: 999999,
         image: '',
+        username: 'Herman Melville',
+        timestamp: new Date(1851, 9, 18),
+        postImage: '',
         paragraphs: [
           {
             text:
@@ -200,7 +201,7 @@ export default {
           {
             key: 436987869,
             user: {
-              key: 345987,
+              key: 100000,
               username: 'Chad Williams',
               email: 'hater@gmail.com',
               password: 'LITcritic',
@@ -218,9 +219,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.container {
-  max-width: 40em;
-}
-</style>

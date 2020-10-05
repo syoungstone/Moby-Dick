@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="login">
-      <form>
+      <form @submit.prevent>
         <div>
           <input
             type="text"
@@ -40,8 +40,8 @@ export default {
   methods: {
     login() {
       this.$store.dispatch('login', {
-        email: this.loginForm.email,
-        password: this.loginForm.password
+        email: this.credentials.email,
+        password: this.credentials.password
       })
     }
   }

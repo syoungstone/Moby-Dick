@@ -5,12 +5,12 @@
     <div id="author-container">
       <BaseProfilePicture
         style="float:left;"
-        :imgSrc="blogPost.author.image"
-        :userKey="blogPost.author.key"
+        :imgSrc="blogPost.image"
+        :userKey="blogPost.uid"
         dimensions="60px"
       />
       <div style="float:left;">
-        <h4 id="author-name">{{ blogPost.author.username }}</h4>
+        <h4 id="author-name">{{ blogPost.username }}</h4>
         <p id="timestamp">
           {{ months[blogPost.timestamp.getMonth()] }}
           {{ blogPost.timestamp.getDate() }},
@@ -19,7 +19,7 @@
       </div>
       <div style="clear:both;"></div>
     </div>
-    <img v-if="blogPost.image" src="blogPost.image" />
+    <img v-if="blogPost.postImage" src="blogPost.postImage" />
     <img v-else src="../assets/post-image.jpg" />
     <p v-for="paragraph in blogPost.paragraphs" :key="paragraph.id">
       {{ paragraph.text }}
@@ -29,10 +29,11 @@
       id="comment-form"
       :loggedIn="loggedIn"
       :currentUser="currentUser"
+      :reply="false"
     />
     <CommentPost
-      v-for="comment in blogPost.comments"
-      :key="comment.key"
+      v-for="comment in comments"
+      :key="comment.timestamp.seconds"
       :comment="comment"
       :loggedIn="loggedIn"
       :currentUser="currentUser"
@@ -59,6 +60,10 @@ export default {
     },
     currentUser: {
       type: Object,
+      required: true
+    },
+    comments: {
+      type: Array,
       required: true
     }
   },

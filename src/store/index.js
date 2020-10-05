@@ -1,17 +1,35 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import fb from '../firebase'
+import * as fb from '../firebase'
 import router from '../router/index'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+// realtime firebase connection
+fb.commentsCollection.orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+  let commentsArray = []
+
+  snapshot.forEach(doc => {
+    let comment = doc.data()
+    comment.id = doc.id
+
+    commentsArray.push(comment)
+  })
+
+  store.commit('setComments', commentsArray)
+})
+
+const store = new Vuex.Store({
   state: {
-    userProfile: {}
+    userProfile: {},
+    comments: []
   },
   mutations: {
     setUserProfile(state, val) {
       state.userProfile = val
+    },
+    setComments(state, val) {
+      state.comments = val
     }
   },
   actions: {
@@ -21,9 +39,9 @@ export default new Vuex.Store({
         form.email,
         form.password
       )
-
       // fetch user profile and set in state
       dispatch('fetchUserProfile', user)
+      router.push('/')
     },
     async fetchUserProfile({ commit }, user) {
       // fetch user profile
@@ -31,9 +49,47 @@ export default new Vuex.Store({
 
       // set user profile in state
       commit('setUserProfile', userProfile.data())
+    },
+    async signup({ dispatch }, form) {
+      // sign user up
+      const { user } = await fb.auth.createUserWithEmailAndPassword(
+        form.email,
+        form.password
+      )
 
-      // change route to dashboard
+      // create user profile object in userCollections
+      await fb.usersCollection.doc(user.uid).set({
+        username: form.username,
+        email: form.email,
+        image: form.image
+      })
+
+      // fetch user profile and set in state
+      dispatch('fetchUserProfile', user)
+
+      // change route to profile
+      router.push('/profile')
+    },
+    async logout({ commit }) {
+      await fb.auth.signOut()
+
+      // clear userProfile and redirect to /login
+      commit('setUserProfile', {})
       router.push('/')
+    },
+    async submitComment({ state }, comment) {
+      await fb.commentsCollection.add({
+        uid: fb.auth.currentUser.uid,
+        image: state.userProfile.image,
+        username: state.userProfile.username,
+        timestamp: new Date(),
+        text: comment.text,
+        likes: 0,
+        dislikes: 0,
+        replies: 0
+      })
     }
   }
 })
+
+export default store
