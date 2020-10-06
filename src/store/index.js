@@ -19,21 +19,83 @@ fb.commentsCollection.orderBy('timestamp', 'desc').onSnapshot(snapshot => {
   store.commit('setComments', commentsArray)
 })
 
+fb.likesCollection.onSnapshot(snapshot => {
+  let likesArray = []
+
+  snapshot.forEach(doc => {
+    let like = doc.data()
+    likesArray.push(like)
+  })
+
+  store.commit('setLikes', likesArray)
+  store.commit('setUserLikes')
+})
+
+fb.dislikesCollection.onSnapshot(snapshot => {
+  let dislikesArray = []
+
+  snapshot.forEach(doc => {
+    let dislike = doc.data()
+    dislikesArray.push(dislike)
+  })
+
+  store.commit('setDislikes', dislikesArray)
+  store.commit('setUserDislikes')
+})
+
 const store = new Vuex.Store({
   state: {
     userProfile: {},
+    likes: [],
+    dislikes: [],
+    userLikes: [],
+    userDislikes: [],
     comments: []
   },
   mutations: {
     setUserProfile(state, val) {
       state.userProfile = val
+      if (state.userProfile && fb.auth.currentUser) {
+        state.userProfile.uid = fb.auth.currentUser.uid
+      } else {
+        state.userLikes = []
+        state.userDislikes = []
+      }
     },
     setComments(state, val) {
       state.comments = val
+    },
+    setLikes(state, val) {
+      state.likes = val
+    },
+    setDislikes(state, val) {
+      state.dislikes = val
+    },
+    setUserLikes(state) {
+      let userLikes = []
+      if (state.likes && fb.auth.currentUser) {
+        for (let i = 0; i < state.likes.length; i++) {
+          if (state.likes[i].userId === fb.auth.currentUser.uid) {
+            userLikes.push(state.likes[i].commentId)
+          }
+        }
+      }
+      state.userLikes = userLikes
+    },
+    setUserDislikes(state) {
+      let userDislikes = []
+      if (state.dislikes && fb.auth.currentUser) {
+        for (let i = 0; i < state.dislikes.length; i++) {
+          if (state.dislikes[i].userId === fb.auth.currentUser.uid) {
+            userDislikes.push(state.dislikes[i].commentId)
+          }
+        }
+      }
+      state.userDislikes = userDislikes
     }
   },
   actions: {
-    async login({ dispatch }, form) {
+    async login({ dispatch, commit }, form) {
       // sign user in
       const { user } = await fb.auth.signInWithEmailAndPassword(
         form.email,
@@ -41,7 +103,9 @@ const store = new Vuex.Store({
       )
       // fetch user profile and set in state
       dispatch('fetchUserProfile', user)
-      router.push('/')
+      commit('setUserLikes')
+      commit('setUserDislikes')
+      router.push('/', () => {})
     },
     async fetchUserProfile({ commit }, user) {
       // fetch user profile
@@ -68,14 +132,14 @@ const store = new Vuex.Store({
       dispatch('fetchUserProfile', user)
 
       // change route to profile
-      router.push('/profile')
+      router.push('/profile', () => {})
     },
     async logout({ commit }) {
       await fb.auth.signOut()
 
       // clear userProfile and redirect to /login
       commit('setUserProfile', {})
-      router.push('/')
+      router.push('/', () => {})
     },
     async submitComment({ state }, comment) {
       await fb.commentsCollection.add({
@@ -87,6 +151,72 @@ const store = new Vuex.Store({
         likes: 0,
         dislikes: 0,
         replies: 0
+      })
+    },
+    async deleteComment({ commit }, comment) {
+      await fb.commentsCollection.doc(comment.id).delete()
+      await fb.likesCollection
+        .where('commentId', '==', comment.id)
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete()
+          })
+        })
+      await fb.dislikesCollection
+        .where('commentId', '==', comment.id)
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete()
+          })
+        })
+      commit('getUserLikesDislikes')
+    },
+    async addLike({ state }, comment) {
+      await fb.likesCollection.add({
+        commentId: comment.id,
+        userId: state.userProfile.uid
+      })
+      fb.commentsCollection.doc(comment.id).update({
+        likes: comment.count + 1
+      })
+    },
+    async addDislike({ state }, comment) {
+      await fb.dislikesCollection.add({
+        commentId: comment.id,
+        userId: state.userProfile.uid
+      })
+      fb.commentsCollection.doc(comment.id).update({
+        dislikes: comment.count + 1
+      })
+    },
+    async removeLike({ state }, comment) {
+      await fb.likesCollection
+        .where('commentId', '==', comment.id)
+        .where('userId', '==', state.userProfile.uid)
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete()
+          })
+        })
+      fb.commentsCollection.doc(comment.id).update({
+        likes: comment.count - 1
+      })
+    },
+    async removeDislike({ state }, comment) {
+      await fb.dislikesCollection
+        .where('commentId', '==', comment.id)
+        .where('userId', '==', state.userProfile.uid)
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            doc.ref.delete()
+          })
+        })
+      fb.commentsCollection.doc(comment.id).update({
+        dislikes: comment.count - 1
       })
     }
   }

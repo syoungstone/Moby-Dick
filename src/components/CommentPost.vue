@@ -42,6 +42,16 @@
             >Reply</BaseIcon
           >
         </div>
+        <div
+          v-if="
+            this.currentUser.uid && this.comment.uid === this.currentUser.uid
+          "
+          v-on:click="deleteComment()"
+        >
+          <BaseIcon class="base-icon" style="float:right;" name="trash"
+            >Delete</BaseIcon
+          >
+        </div>
         <div style="clear:both;"></div>
       </footer>
     </div>
@@ -53,6 +63,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import CommentForm from '@/components/CommentForm.vue'
 export default {
   components: {
@@ -89,44 +100,66 @@ export default {
         'December'
       ],
       userReply: false,
-      userLike: false,
-      userDislike: false,
       myDate: new Date(this.comment.timestamp.seconds * 1000)
     }
   },
   methods: {
     likeClick() {
-      // if (this.loggedIn) {
-      //   if (this.userDislike) {
-      //     this.userDislike = false
-      //     this.comment.dislikes -= 1
-      //   }
-      //   if (this.userLike) {
-      //     this.userLike = false
-      //     this.comment.likes -= 1
-      //   } else {
-      //     this.userLike = true
-      //     this.comment.likes += 1
-      //   }
-      // }
+      if (this.loggedIn) {
+        if (this.userDislike) {
+          this.$store.dispatch('removeDislike', {
+            id: this.comment.id,
+            count: this.comment.dislikes
+          })
+        }
+        if (this.userLike) {
+          this.$store.dispatch('removeLike', {
+            id: this.comment.id,
+            count: this.comment.likes
+          })
+        } else {
+          this.$store.dispatch('addLike', {
+            id: this.comment.id,
+            count: this.comment.likes
+          })
+        }
+      }
     },
     dislikeClick() {
-      // if (this.loggedIn) {
-      //   if (this.userLike) {
-      //     this.userLike = false
-      //     this.comment.likes -= 1
-      //   }
-      //   if (this.userDislike) {
-      //     this.userDislike = false
-      //     this.comment.dislikes -= 1
-      //   } else {
-      //     this.userDislike = true
-      //     this.comment.dislikes += 1
-      //   }
-      // }
+      if (this.loggedIn) {
+        if (this.userLike) {
+          this.$store.dispatch('removeLike', {
+            id: this.comment.id,
+            count: this.comment.likes
+          })
+        }
+        if (this.userDislike) {
+          this.$store.dispatch('removeDislike', {
+            id: this.comment.id,
+            count: this.comment.dislikes
+          })
+        } else {
+          this.$store.dispatch('addDislike', {
+            id: this.comment.id,
+            count: this.comment.dislikes
+          })
+        }
+      }
     },
     showReply() {
       if (this.loggedIn) this.userReply = !this.userReply
+    },
+    deleteComment() {
+      this.$store.dispatch('deleteComment', { id: this.comment.id })
+    }
+  },
+  computed: {
+    ...mapState(['userLikes', 'userDislikes']),
+    userLike() {
+      return this.userLikes.includes(this.comment.id)
+    },
+    userDislike() {
+      return this.userDislikes.includes(this.comment.id)
     }
   }
 }

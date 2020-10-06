@@ -31,13 +31,18 @@
       :currentUser="currentUser"
       :reply="false"
     />
-    <CommentPost
-      v-for="comment in comments"
-      :key="comment.timestamp.seconds"
-      :comment="comment"
-      :loggedIn="loggedIn"
-      :currentUser="currentUser"
-    />
+    <div v-if="comments.length">
+      <CommentPost
+        v-for="comment in comments"
+        :key="comment.timestamp.seconds"
+        :comment="comment"
+        :loggedIn="loggedIn"
+        :currentUser="currentUser"
+      />
+    </div>
+    <div v-else>
+      <p>No Comments!</p>
+    </div>
   </div>
 </template>
 
