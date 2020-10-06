@@ -50,16 +50,19 @@ const store = new Vuex.Store({
     dislikes: [],
     userLikes: [],
     userDislikes: [],
-    comments: []
+    comments: [],
+    loggedIn: false
   },
   mutations: {
     setUserProfile(state, val) {
       state.userProfile = val
       if (state.userProfile && fb.auth.currentUser) {
         state.userProfile.uid = fb.auth.currentUser.uid
+        state.loggedIn = true
       } else {
         state.userLikes = []
         state.userDislikes = []
+        state.loggedIn = false
       }
     },
     setComments(state, val) {
@@ -150,7 +153,8 @@ const store = new Vuex.Store({
         text: comment.text,
         likes: 0,
         dislikes: 0,
-        replies: 0
+        reply: comment.reply,
+        parentId: comment.parentId
       })
     },
     async deleteComment({ commit }, comment) {
@@ -171,7 +175,7 @@ const store = new Vuex.Store({
             doc.ref.delete()
           })
         })
-      commit('getUserLikesDislikes')
+      commit('setUserLikes'), commit('setUserLikes')
     },
     async addLike({ state }, comment) {
       await fb.likesCollection.add({

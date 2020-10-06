@@ -2,26 +2,20 @@
   <div v-if="loggedIn">
     <h1>Your Profile</h1>
     <BaseProfilePicture
-      :imgSrc="currentUser.image"
-      :userKey="currentUser.key"
+      :imgSrc="userProfile.image"
+      :userKey="userProfile.key"
       dimensions="100px"
     />
-    <h2>{{ currentUser.username }}</h2>
-    <h3>{{ currentUser.email }}</h3>
+    <h2>{{ userProfile.username }}</h2>
+    <h3>{{ userProfile.email }}</h3>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-  props: {
-    currentUser: {
-      type: Object,
-      required: true
-    },
-    loggedIn: {
-      type: Boolean,
-      required: true
-    }
+  computed: {
+    ...mapState(['userProfile', 'loggedIn'])
   }
 }
 </script>

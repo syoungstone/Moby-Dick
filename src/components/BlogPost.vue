@@ -25,19 +25,13 @@
       {{ paragraph.text }}
     </p>
     <h2>Comments</h2>
-    <CommentForm
-      id="comment-form"
-      :loggedIn="loggedIn"
-      :currentUser="currentUser"
-      :reply="false"
-    />
-    <div v-if="comments.length">
+    <CommentForm id="comment-form" :reply="false" parentId="noparent" />
+    <div v-if="topLevelComments">
       <CommentPost
-        v-for="comment in comments"
+        v-for="comment in topLevelComments"
         :key="comment.timestamp.seconds"
         :comment="comment"
-        :loggedIn="loggedIn"
-        :currentUser="currentUser"
+        :parentDeleted="false"
       />
     </div>
     <div v-else>
@@ -47,6 +41,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import CommentPost from '@/components/CommentPost.vue'
 import CommentForm from '@/components/CommentForm.vue'
 export default {
@@ -57,18 +52,6 @@ export default {
   props: {
     blogPost: {
       type: Object,
-      required: true
-    },
-    loggedIn: {
-      type: Boolean,
-      required: true
-    },
-    currentUser: {
-      type: Object,
-      required: true
-    },
-    comments: {
-      type: Array,
       required: true
     }
   },
@@ -88,6 +71,18 @@ export default {
         'November',
         'December'
       ]
+    }
+  },
+  computed: {
+    ...mapState(['comments']),
+    topLevelComments() {
+      let topLevelComments = []
+      if (this.comments) {
+        for (const comment of this.comments) {
+          if (!comment.reply) topLevelComments.push(comment)
+        }
+      }
+      return topLevelComments
     }
   }
 }

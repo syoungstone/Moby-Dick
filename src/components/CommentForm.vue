@@ -25,16 +25,12 @@ import { mapState } from 'vuex'
 import LoginComponent from '@/components/LoginComponent.vue'
 export default {
   props: {
-    loggedIn: {
-      type: Boolean,
-      required: true
-    },
-    currentUser: {
-      type: Object,
-      required: true
-    },
     reply: {
       type: Boolean,
+      required: true
+    },
+    parentId: {
+      type: String,
       required: true
     }
   },
@@ -50,14 +46,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile', 'comments'])
+    ...mapState(['loggedIn'])
   },
   methods: {
     submitComment() {
-      if (!this.reply) {
-        this.$store.dispatch('submitComment', { text: this.comment.text })
-        this.comment.text = ''
-      }
+      this.$store.dispatch('submitComment', {
+        text: this.comment.text,
+        reply: this.reply,
+        parentId: this.parentId
+      })
+      this.comment.text = ''
+      this.$emit('clicked')
     }
   }
 }

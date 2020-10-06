@@ -2,19 +2,14 @@
   <div id="app">
     <div class="container">
       <SiteHeader />
-      <NavBar :loggedIn="loggedIn" id="nav" />
-      <router-view
-        :loggedIn="loggedIn"
-        :currentUser="userProfile"
-        :comments="comments"
-      />
+      <NavBar id="nav" />
+      <router-view />
     </div>
   </div>
 </template>
 
 <script src="https://unpkg.com/feather-icons"></script>
 <script>
-import { mapState } from 'vuex'
 import NavBar from '@/components/NavBar.vue'
 import SiteHeader from '@/components/SiteHeader.vue'
 
@@ -22,12 +17,6 @@ export default {
   components: {
     NavBar,
     SiteHeader
-  },
-  computed: {
-    ...mapState(['userProfile', 'comments']),
-    loggedIn() {
-      return Object.keys(this.userProfile).length > 1
-    }
   }
 }
 </script>

@@ -44,7 +44,7 @@
         </div>
         <div
           v-if="
-            this.currentUser.uid && this.comment.uid === this.currentUser.uid
+            this.userProfile.uid && this.comment.uid === this.userProfile.uid
           "
           v-on:click="deleteComment()"
         >
@@ -55,10 +55,20 @@
         <div style="clear:both;"></div>
       </footer>
     </div>
-    <div class="comment" id="replies" v-if="userReply">
-      <CommentForm :loggedIn="loggedIn" :reply="true" />
-      <CommentPost v-for="reply in comment.replies" :key="reply.key" />
+    <div v-if="userReply" class="comment replies">
+      <CommentForm
+        :reply="true"
+        :parentId="comment.id"
+        @clicked="onReplySubmit"
+      />
     </div>
+    <CommentPost
+      v-for="reply in commentReplies"
+      :comment="reply"
+      :key="reply.id"
+      :parentDeleted="commentDeleted"
+      class="replies"
+    />
   </div>
 </template>
 
@@ -66,6 +76,7 @@
 import { mapState } from 'vuex'
 import CommentForm from '@/components/CommentForm.vue'
 export default {
+  name: 'CommentPost',
   components: {
     CommentForm
   },
@@ -74,13 +85,14 @@ export default {
       type: Object,
       required: true
     },
-    loggedIn: {
+    parentDeleted: {
       type: Boolean,
       required: true
-    },
-    currentUser: {
-      type: Object,
-      required: true
+    }
+  },
+  watch: {
+    parentDeleted: function(val) {
+      if (val) this.deleteComment()
     }
   },
   data() {
@@ -99,8 +111,9 @@ export default {
         'November',
         'December'
       ],
+      myDate: new Date(this.comment.timestamp.seconds * 1000),
       userReply: false,
-      myDate: new Date(this.comment.timestamp.seconds * 1000)
+      commentDeleted: false
     }
   },
   methods: {
@@ -150,16 +163,36 @@ export default {
       if (this.loggedIn) this.userReply = !this.userReply
     },
     deleteComment() {
+      this.commentDeleted = true
       this.$store.dispatch('deleteComment', { id: this.comment.id })
+    },
+    onReplySubmit() {
+      this.userReply = false
     }
   },
   computed: {
-    ...mapState(['userLikes', 'userDislikes']),
+    ...mapState([
+      'userProfile',
+      'userLikes',
+      'userDislikes',
+      'comments',
+      'loggedIn'
+    ]),
     userLike() {
       return this.userLikes.includes(this.comment.id)
     },
     userDislike() {
       return this.userDislikes.includes(this.comment.id)
+    },
+    ...mapState(['comments']),
+    commentReplies() {
+      let commentReplies = []
+      if (this.comments) {
+        for (const comment of this.comments) {
+          if (comment.parentId === this.comment.id) commentReplies.push(comment)
+        }
+      }
+      return commentReplies
     }
   }
 }
@@ -175,7 +208,7 @@ export default {
 .comment:hover {
   transform: scale(1.01);
 }
-#replies {
+.replies {
   margin-left: 70px;
 }
 #username {

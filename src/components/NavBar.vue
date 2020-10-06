@@ -13,12 +13,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-  props: {
-    loggedIn: {
-      type: Boolean,
-      required: true
-    }
+  computed: {
+    ...mapState(['loggedIn'])
   },
   methods: {
     logout() {

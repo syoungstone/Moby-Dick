@@ -1,11 +1,6 @@
 <template>
   <div>
-    <BlogPost
-      :blogPost="blogPost"
-      :loggedIn="loggedIn"
-      :currentUser="currentUser"
-      :comments="comments"
-    />
+    <BlogPost :blogPost="blogPost" />
   </div>
 </template>
 
@@ -14,20 +9,6 @@ import BlogPost from '@/components/BlogPost.vue'
 export default {
   components: {
     BlogPost
-  },
-  props: {
-    loggedIn: {
-      type: Boolean,
-      required: true
-    },
-    currentUser: {
-      type: Object,
-      required: true
-    },
-    comments: {
-      type: Array,
-      required: true
-    }
   },
   data() {
     return {
