@@ -51,7 +51,9 @@ const store = new Vuex.Store({
     userLikes: [],
     userDislikes: [],
     comments: [],
-    loggedIn: false
+    loggedIn: false,
+    signupErrorMessage: '',
+    loginErrorMessage: ''
   },
   mutations: {
     setUserProfile(state, val) {
@@ -98,17 +100,22 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    async login({ dispatch, commit }, form) {
+    async login({ dispatch, commit, state }, form) {
       // sign user in
-      const { user } = await fb.auth.signInWithEmailAndPassword(
-        form.email,
-        form.password
-      )
-      // fetch user profile and set in state
-      dispatch('fetchUserProfile', user)
-      commit('setUserLikes')
-      commit('setUserDislikes')
-      router.push('/', () => {})
+      state.loginErrorMessage = ''
+      state.signupErrorMessage = ''
+      await fb.auth
+        .signInWithEmailAndPassword(form.email, form.password)
+        .then(({ user }) => {
+          // fetch user profile and set in state
+          dispatch('fetchUserProfile', user)
+          commit('setUserLikes')
+          commit('setUserDislikes')
+          router.push('/', () => {})
+        })
+        .catch(e => {
+          state.loginErrorMessage = e.message
+        })
     },
     async fetchUserProfile({ commit }, user) {
       // fetch user profile
@@ -117,25 +124,29 @@ const store = new Vuex.Store({
       // set user profile in state
       commit('setUserProfile', userProfile.data())
     },
-    async signup({ dispatch }, form) {
+    async signup({ dispatch, state }, form) {
       // sign user up
-      const { user } = await fb.auth.createUserWithEmailAndPassword(
-        form.email,
-        form.password
-      )
+      state.loginErrorMessage = ''
+      state.signupErrorMessage = ''
+      await fb.auth
+        .createUserWithEmailAndPassword(form.email, form.password)
+        .then(({ user }) => {
+          // create user profile object in userCollections
+          fb.usersCollection.doc(user.uid).set({
+            username: form.username,
+            email: form.email,
+            image: form.image
+          })
 
-      // create user profile object in userCollections
-      await fb.usersCollection.doc(user.uid).set({
-        username: form.username,
-        email: form.email,
-        image: form.image
-      })
+          // fetch user profile and set in state
+          dispatch('fetchUserProfile', user)
 
-      // fetch user profile and set in state
-      dispatch('fetchUserProfile', user)
-
-      // change route to profile
-      router.push('/profile', () => {})
+          // change route to profile
+          router.push('/profile', () => {})
+        })
+        .catch(e => {
+          state.signupErrorMessage = e.message
+        })
     },
     async logout({ commit }) {
       await fb.auth.signOut()

@@ -1,6 +1,9 @@
 <template>
   <div>
     <div id="login">
+      <p class="error-message" v-if="this.loginErrorMessage">
+        {{ loginErrorMessage }}
+      </p>
       <form @submit.prevent>
         <div>
           <input
@@ -28,6 +31,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -36,6 +40,9 @@ export default {
         password: ''
       }
     }
+  },
+  computed: {
+    ...mapState(['loginErrorMessage'])
   },
   methods: {
     login() {
@@ -53,5 +60,8 @@ input,
 button {
   padding: 10px;
   margin: 10px 10px 10px 0px;
+}
+.error-message {
+  color: rgb(216, 0, 0);
 }
 </style>

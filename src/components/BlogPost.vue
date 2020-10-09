@@ -27,12 +27,26 @@
     <h2>Comments</h2>
     <CommentForm id="comment-form" :reply="false" parentId="noparent" />
     <div v-if="topLevelComments">
-      <CommentPost
-        v-for="comment in topLevelComments"
-        :key="comment.timestamp.seconds"
-        :comment="comment"
-        :parentDeleted="false"
-      />
+      <div v-if="viewAll">
+        <CommentPost
+          v-for="comment in topLevelComments"
+          :key="comment.timestamp.seconds"
+          :comment="comment"
+          :parentDeleted="false"
+        />
+        <h4 class="link" @click="setViewAll">Show less</h4>
+      </div>
+      <div v-else>
+        <CommentPost
+          v-for="comment in topLevelComments.slice(0, 3)"
+          :key="comment.timestamp.seconds"
+          :comment="comment"
+          :parentDeleted="false"
+        />
+        <h4 class="link" v-if="topLevelComments.length > 3" @click="setViewAll">
+          Show more
+        </h4>
+      </div>
     </div>
     <div v-else>
       <p>No Comments!</p>
@@ -70,7 +84,8 @@ export default {
         'October',
         'November',
         'December'
-      ]
+      ],
+      viewAll: false
     }
   },
   computed: {
@@ -83,6 +98,11 @@ export default {
         }
       }
       return topLevelComments
+    }
+  },
+  methods: {
+    setViewAll() {
+      this.viewAll = !this.viewAll
     }
   }
 }
@@ -111,5 +131,9 @@ img {
 }
 #comment-form {
   margin-bottom: 20px;
+}
+.link {
+  cursor: pointer;
+  text-align: center;
 }
 </style>

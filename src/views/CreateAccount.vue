@@ -3,6 +3,9 @@
     <h1 v-if="accountCreated">Success!</h1>
     <div v-else id="login">
       <h1>Create Account</h1>
+      <p class="error-message" v-if="this.signupErrorMessage">
+        {{ signupErrorMessage }}
+      </p>
       <section>
         <form @submit.prevent>
           <div v-if="!profile.image">
@@ -72,8 +75,7 @@
               !validEmail ||
                 !matchingPasswords ||
                 !validPassword ||
-                !this.profile.username ||
-                fileTooBig
+                !this.profile.username
             "
             @click="createAccount()"
             id="create-account"
@@ -89,6 +91,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -104,6 +107,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['signupErrorMessage']),
     matchingPasswords() {
       return this.profile.password === this.passwordConfirm
     },
@@ -120,7 +124,9 @@ export default {
       var files = e.target.files || e.dataTransfer.files
       if (!files.length) return
       this.fileTooBig = files[0].size > 1000000
-      if (!this.fileTooBig) this.createImage(files[0])
+      if (!this.fileTooBig) {
+        this.createImage(files[0])
+      }
     },
     createImage(file) {
       var reader = new FileReader()
@@ -139,7 +145,11 @@ export default {
         password: this.profile.password,
         image: this.profile.image
       })
-      this.accountCreated = true
+      setTimeout(() => {
+        if (!this.signupErrorMessage) {
+          this.accountCreated = true
+        }
+      }, 2000)
     }
   }
 }

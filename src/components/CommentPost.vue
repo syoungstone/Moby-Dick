@@ -113,49 +113,54 @@ export default {
       ],
       myDate: new Date(this.comment.timestamp.seconds * 1000),
       userReply: false,
-      commentDeleted: false
+      commentDeleted: false,
+      lastLikeDislike: new Date()
     }
   },
   methods: {
     likeClick() {
-      if (this.loggedIn) {
-        if (this.userDislike) {
-          this.$store.dispatch('removeDislike', {
-            id: this.comment.id,
-            count: this.comment.dislikes
-          })
-        }
-        if (this.userLike) {
-          this.$store.dispatch('removeLike', {
-            id: this.comment.id,
-            count: this.comment.likes
-          })
-        } else {
-          this.$store.dispatch('addLike', {
-            id: this.comment.id,
-            count: this.comment.likes
-          })
+      if (this.halfSecondPassed()) {
+        if (this.loggedIn) {
+          if (this.userDislike) {
+            this.$store.dispatch('removeDislike', {
+              id: this.comment.id,
+              count: this.comment.dislikes
+            })
+          }
+          if (this.userLike) {
+            this.$store.dispatch('removeLike', {
+              id: this.comment.id,
+              count: this.comment.likes
+            })
+          } else {
+            this.$store.dispatch('addLike', {
+              id: this.comment.id,
+              count: this.comment.likes
+            })
+          }
         }
       }
     },
     dislikeClick() {
-      if (this.loggedIn) {
-        if (this.userLike) {
-          this.$store.dispatch('removeLike', {
-            id: this.comment.id,
-            count: this.comment.likes
-          })
-        }
-        if (this.userDislike) {
-          this.$store.dispatch('removeDislike', {
-            id: this.comment.id,
-            count: this.comment.dislikes
-          })
-        } else {
-          this.$store.dispatch('addDislike', {
-            id: this.comment.id,
-            count: this.comment.dislikes
-          })
+      if (this.halfSecondPassed()) {
+        if (this.loggedIn) {
+          if (this.userLike) {
+            this.$store.dispatch('removeLike', {
+              id: this.comment.id,
+              count: this.comment.likes
+            })
+          }
+          if (this.userDislike) {
+            this.$store.dispatch('removeDislike', {
+              id: this.comment.id,
+              count: this.comment.dislikes
+            })
+          } else {
+            this.$store.dispatch('addDislike', {
+              id: this.comment.id,
+              count: this.comment.dislikes
+            })
+          }
         }
       }
     },
@@ -168,6 +173,15 @@ export default {
     },
     onReplySubmit() {
       this.userReply = false
+    },
+    halfSecondPassed() {
+      let clickTime = new Date()
+      if (clickTime.getTime() - this.lastLikeDislike.getTime() > 500) {
+        this.lastLikeDislike = clickTime
+        return true
+      } else {
+        return false
+      }
     }
   },
   computed: {
