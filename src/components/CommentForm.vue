@@ -6,7 +6,7 @@
     </button>
     <div v-else>
       <form @submit.prevent>
-        <textarea v-model.trim="comment.text" rows="4" cols="50" />
+        <textarea v-model.trim="comment.text" rows="4" />
         <div></div>
         <button
           @click="submitComment()"
@@ -66,5 +66,9 @@ export default {
 button {
   padding: 10px;
   margin: 10px 10px 10px 0px;
+}
+textarea {
+  width: 100%;
+  max-width: 500px;
 }
 </style>

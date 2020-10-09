@@ -1,7 +1,7 @@
 <template>
   <header>
     <router-link :to="{ name: 'Home' }">
-      <h1 style="float:left;" id="site-title">Moby Dick</h1>
+      <h1 style="float:left;" id="site-title">Moby <br id="break" />Dick</h1>
       <img style="float:left;" id="logo" src="../assets/logo.svg" />
     </router-link>
     <div style="clear:both;"></div>
@@ -24,5 +24,10 @@
 @font-face {
   font-family: 'LibreBaskerville';
   src: url('../assets/LibreBaskerville-Bold.ttf') format('ttf');
+}
+@media screen and (min-width: 500px) {
+  #break {
+    display: none;
+  }
 }
 </style>
