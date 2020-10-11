@@ -1,4 +1,4 @@
-# vue-demo-real-world-2
+# Moby Dick
 
 ## Project setup
 ```
