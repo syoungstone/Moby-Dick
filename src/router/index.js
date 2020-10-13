@@ -38,9 +38,7 @@ const routes = [
     path: '/attributions',
     name: 'Attributions',
     component: () =>
-      import(
-        /* webpackChunkName: "create-account" */ '../views/Attributions.vue'
-      )
+      import(/* webpackChunkName: "attributions" */ '../views/Attributions.vue')
   }
 ]
 

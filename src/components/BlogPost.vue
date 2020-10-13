@@ -19,7 +19,7 @@
       </div>
       <div style="clear:both;"></div>
     </div>
-    <img v-if="blogPost.postImage" src="blogPost.postImage" />
+    <img v-if="blogPost.postImage" :src="blogPost.postImage" />
     <img v-else src="../assets/post-image.jpg" />
     <p v-for="paragraph in blogPost.paragraphs" :key="paragraph.id">
       {{ paragraph.text }}

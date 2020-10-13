@@ -186,7 +186,7 @@ const store = new Vuex.Store({
             doc.ref.delete()
           })
         })
-      commit('setUserLikes'), commit('setUserLikes')
+      commit('setUserLikes'), commit('setUserDislikes')
     },
     async addLike({ state }, comment) {
       await fb.likesCollection.add({

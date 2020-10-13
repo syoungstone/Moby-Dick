@@ -1,7 +1,7 @@
 <template>
   <div>
     <LoginComponent v-if="loginShow && !loggedIn" />
-    <button v-else-if="!loggedIn" v-on:click="loginShow = true">
+    <button v-else-if="!loggedIn" @click="loginShow = true">
       Log In To Comment
     </button>
     <div v-else>
