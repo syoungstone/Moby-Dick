@@ -21,6 +21,7 @@
       <footer>
         <div v-on:click="likeClick()">
           <BaseIcon
+            :title="[loggedIn ? '' : 'Log in to like']"
             class="base-icon"
             style="float:left;"
             name="thumbs-up"
@@ -30,6 +31,7 @@
         </div>
         <div v-on:click="dislikeClick()">
           <BaseIcon
+            :title="loggedIn ? '' : 'Log in to dislike'"
             class="base-icon"
             style="float:left;"
             name="thumbs-down"
@@ -38,7 +40,11 @@
           >
         </div>
         <div v-on:click="showReply()">
-          <BaseIcon class="base-icon" style="float:left;" name="corner-up-left"
+          <BaseIcon
+            :title="loggedIn ? '' : 'Log in to reply'"
+            class="base-icon"
+            style="float:left;"
+            name="corner-up-left"
             >Reply</BaseIcon
           >
         </div>
