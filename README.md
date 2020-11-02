@@ -1,24 +1,5 @@
 # Moby Dick
 
-## Project setup
-```
-npm install
-```
+A web app created for an internship application, Moby Dick uses Vue.js and Google Firebase to create a blog site where users can create accounts, leave comments, reply to comments, and like/dislike comments.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See it in action at [mobydick.seanyoungstone.work](https://mobydick.seanyoungstone.work).
